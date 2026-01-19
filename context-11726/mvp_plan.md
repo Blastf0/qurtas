@@ -173,12 +173,25 @@ qurtas/
 
 ---
 
-## Key Questions to Resolve
+## Design Decisions ✅
 
-1. **Session Tracking Method**: Should users enter page ranges (112-127) or just "pages read" (15)?
-2. **Notes Format**: Free-form text or structured prompts ("What stood out?", "Key takeaways?")?
-3. **Reading Goals**: Should MVP include daily/weekly reading goals, or focus purely on tracking?
-4. **Book Discovery**: For MVP, manual entry only, or integrate with OpenLibrary API for metadata?
+1. **Session Tracking Method**: ✅ **Page ranges** (e.g., "Read pages 112-127")
+   - Provides reliable tracking with start/end points
+   - Auto-calculates pages read
+   
+2. **Notes Format**: ✅ **Structured prompts** for active recall
+   - Helps users focus on meaningful reflection
+   - Encourages better retention through active recall
+   - Example prompts: "What stood out?", "Key ideas?", "Questions raised?"
+   
+3. **Reading Goals**: ✅ **Weekly reading goals included in MVP**
+   - Users can set weekly page/session targets
+   - Progress visualization against goals
+   
+4. **Book Discovery**: ✅ **API integration** for auto-fill book details
+   - Similar to Fable/Goodreads book search
+   - Auto-populate title, author, page count, cover image
+   - Fallback to manual entry if book not found
 
 ---
 

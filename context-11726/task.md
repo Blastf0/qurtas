@@ -1,32 +1,39 @@
 # Qurtas MVP - Mobile PWA Development
 
 ## Phase 1: Planning & Architecture
-- [ ] Define MVP feature scope
-- [ ] Design data model for Reading Journey Tracking
-- [ ] Choose tech stack (vanilla JS vs framework)
+- [x] Define MVP feature scope
+- [x] Design data model for Reading Journey Tracking
+- [x] Choose tech stack (vanilla JS)
+- [x] Research book API options (OpenLibrary vs Google Books)
 - [ ] Create wireframes for core user flows
 
 ## Phase 2: Project Setup
-- [ ] Initialize PWA project structure
-- [ ] Set up development environment
-- [ ] Configure PWA manifest and service worker
-- [ ] Establish mobile-first CSS foundation
+- [x] Initialize PWA project structure
+- [x] Set up development environment
+- [x] Configure PWA manifest and service worker skeleton
+- [x] Establish mobile-first CSS foundation
 
 ## Phase 3: Core RJT Features
 - [ ] Book library management
-  - [ ] Add book manually (title, author, pages)
-  - [ ] View book list
-  - [ ] Basic book details view
+  - [ ] Book search via API (Google Books or OpenLibrary)
+  - [ ] Add book from search results (auto-fill metadata)
+  - [ ] Manual book entry fallback
+  - [ ] View book list with covers
+  - [ ] Book details view
 - [ ] Reading session tracking
   - [ ] Start reading session
-  - [ ] Log pages read
+  - [ ] Log page range (start page → end page)
+  - [ ] Auto-calculate pages read
   - [ ] End session with timestamp
-- [ ] Post-session notes
-  - [ ] Add reflection notes after session
-  - [ ] View session history
+- [ ] Post-session notes with structured prompts
+  - [ ] "What stood out?" prompt
+  - [ ] "Key ideas/takeaways?" prompt
+  - [ ] "Questions raised?" prompt
+  - [ ] View session history with notes
 - [ ] Progress visualization
   - [ ] Display reading progress (pages/percentage)
   - [ ] Show session streak/frequency
+  - [ ] Weekly reading goal progress
 
 ## Phase 4: PWA Capabilities
 - [ ] Offline functionality
@@ -40,7 +47,14 @@
 - [ ] Performance optimization
 - [ ] User testing preparation
 
-## Phase 6: Minimal Discovery (Optional for MVP)
-- [ ] Manual book search/entry improvements
-- [ ] Basic book metadata (genre, publication year)
-- [ ] Reading goals setting
+## Phase 6: Reading Goals & Analytics
+- [ ] Weekly goal setting
+  - [ ] Set weekly page target
+  - [ ] Set weekly session target
+- [ ] Goal progress tracking
+  - [ ] Visual progress bar for weekly goals
+  - [ ] Goal achievement notifications
+- [ ] Basic analytics
+  - [ ] Pages read this week
+  - [ ] Session count this week
+  - [ ] Average session length
