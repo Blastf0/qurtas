@@ -12,9 +12,10 @@ class Book {
         publishedDate = null,
         description = null,
         currentPage = 0,
-        status = 'reading', // reading, completed, dropped
+        status = 'reading', // reading, completed, dropped, shelved
         dateAdded = new Date().toISOString(),
-        dateCompleted = null
+        dateCompleted = null,
+        conclusionNotes = null
     }) {
         this.id = id;
         this.title = title;
@@ -29,6 +30,7 @@ class Book {
         this.status = status;
         this.dateAdded = dateAdded;
         this.dateCompleted = dateCompleted;
+        this.conclusionNotes = conclusionNotes;
     }
 
     // Calculate reading progress percentage
@@ -90,7 +92,8 @@ class Book {
             currentPage: this.currentPage,
             status: this.status,
             dateAdded: this.dateAdded,
-            dateCompleted: this.dateCompleted
+            dateCompleted: this.dateCompleted,
+            conclusionNotes: this.conclusionNotes
         };
     }
 

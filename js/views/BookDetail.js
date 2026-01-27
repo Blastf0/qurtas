@@ -1,30 +1,30 @@
 // Book Detail View Component for Qurtas
 
 class BookDetailView {
-    constructor() {
-        this.container = null;
-        this.book = null;
+  constructor() {
+    this.container = null;
+    this.book = null;
+  }
+
+  /**
+   * Render the book detail view
+   * @param {HTMLElement} container 
+   * @param {string} bookId 
+   */
+  render(container, bookId) {
+    this.container = container;
+    const bookData = storage.getBookById(bookId);
+
+    if (!bookData) {
+      showToast('Book not found', 'error');
+      app.navigateTo('library');
+      return;
     }
 
-    /**
-     * Render the book detail view
-     * @param {HTMLElement} container 
-     * @param {string} bookId 
-     */
-    render(container, bookId) {
-        this.container = container;
-        const bookData = storage.getBookById(bookId);
+    this.book = Book.fromJSON(bookData);
+    const stats = storage.getSessions(bookId);
 
-        if (!bookData) {
-            showToast('Book not found', 'error');
-            app.navigateTo('library');
-            return;
-        }
-
-        this.book = Book.fromJSON(bookData);
-        const stats = storage.getSessions(bookId);
-
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
           <button class="btn btn-ghost" onclick="app.navigateTo('library')" style="padding: var(--space-sm); min-width: auto;">
@@ -37,9 +37,9 @@ class BookDetailView {
         <div class="card mb-xl" style="display: flex; gap: var(--space-lg); align-items: flex-start;">
           <div style="width: 100px; height: 150px; background: var(--color-bg-tertiary); border-radius: var(--radius-md); overflow: hidden; flex-shrink: 0; box-shadow: var(--shadow-md);">
             ${this.book.coverUrl ?
-                `<img src="${this.book.coverUrl}" alt="${sanitizeHTML(this.book.title)}" style="width: 100%; height: 100%; object-fit: cover;">` :
-                `<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;">📕</div>`
-            }
+        `<img src="${this.book.coverUrl}" alt="${sanitizeHTML(this.book.title)}" style="width: 100%; height: 100%; object-fit: cover;">` :
+        `<div style="display: flex; align-items: center; justify-content: center; height: 100%; font-size: 3rem;">📕</div>`
+      }
           </div>
           <div style="flex: 1;">
             <h2 style="font-size: var(--font-size-2xl); margin-bottom: var(--space-xs);">${sanitizeHTML(this.book.title)}</h2>
@@ -72,20 +72,11 @@ class BookDetailView {
         </div>
 
         <!-- Action Buttons -->
-        <div style="display: flex; flex-direction: column; gap: var(--space-md); margin-bottom: var(--space-2xl);">
-          ${this.book.status !== 'completed' ? `
-            <button id="start-session-btn" class="btn btn-primary btn-full" style="height: 60px; font-size: var(--font-size-lg);">
-              📖 Start Reading Session
-            </button>
-          ` : `
-            <button class="btn btn-secondary btn-full" disabled>
-              ✅ Book Completed
-            </button>
-          `}
+          ${this.renderActionButtons()}
           
           <div style="display: flex; gap: var(--space-md);">
             <button id="edit-progress-btn" class="btn btn-secondary" style="flex: 1;">Update Progress</button>
-            <button id="delete-book-btn" class="btn btn-ghost" style="color: var(--color-error);">Remove Book</button>
+            <button id="delete-book-btn" class="btn btn-ghost" style="color: var(--color-error); flex: 1;">Remove Book</button>
           </div>
         </div>
 
@@ -97,32 +88,73 @@ class BookDetailView {
       </div>
     `;
 
-        this.setupEventListeners();
+    this.setupEventListeners();
+  }
+
+  getStatusColor() {
+    switch (this.book.status) {
+      case 'reading': return 'var(--color-accent-primary)';
+      case 'completed': return 'var(--color-success)';
+      case 'dropped': return 'var(--color-error)';
+      case 'shelved': return 'var(--color-text-secondary)';
+      default: return 'var(--color-text-tertiary)';
+    }
+  }
+
+  renderActionButtons() {
+    const status = this.book.status;
+
+    if (status === 'completed') {
+      return `
+                <div class="card mb-md" style="background: rgba(16, 185, 129, 0.05); text-align: center; padding: var(--space-md);">
+                    <span style="color: var(--color-success); font-weight: bold;">🎉 BOOK COMPLETED</span>
+                </div>
+            `;
     }
 
-    getStatusColor() {
-        switch (this.book.status) {
-            case 'reading': return 'var(--color-accent-primary)';
-            case 'completed': return 'var(--color-success)';
-            case 'dropped': return 'var(--color-error)';
-            default: return 'var(--color-text-tertiary)';
-        }
+    let html = '';
+
+    // Main action: Start Session
+    if (status === 'reading') {
+      html += `
+                <button id="start-session-btn" class="btn btn-primary btn-full mb-md" style="height: 60px; font-size: var(--font-size-lg);">
+                    📖 Start Reading Session
+                </button>
+            `;
+    } else {
+      html += `
+                <button id="resume-reading-btn" class="btn btn-primary btn-full mb-md" style="height: 60px; font-size: var(--font-size-lg);">
+                    📖 Resume Reading
+                </button>
+            `;
     }
 
-    renderSessionHistory(sessions) {
-        if (sessions.length === 0) {
-            return '<p style="color: var(--color-text-tertiary); text-align: center; padding: var(--space-xl);">No sessions yet for this book.</p>';
-        }
+    // Status Management Row
+    html += `
+            <div style="display: flex; gap: var(--space-sm); margin-bottom: var(--space-md);">
+                <button id="mark-complete-btn" class="btn btn-secondary" style="flex: 1; font-size: var(--font-size-xs);">✅ Complete</button>
+                <button id="shelve-book-btn" class="btn btn-secondary" style="flex: 1; font-size: var(--font-size-xs); display: ${status === 'shelved' ? 'none' : 'block'};">⏳ Shelve</button>
+                <button id="drop-book-btn" class="btn btn-secondary" style="flex: 1; font-size: var(--font-size-xs); color: var(--color-error);">🛑 Drop</button>
+            </div>
+        `;
 
-        // Show last 5 sessions
-        const recentSessions = [...sessions].reverse().slice(0, 5);
+    return html;
+  }
 
-        return `
+  renderSessionHistory(sessions) {
+    if (sessions.length === 0) {
+      return '<p style="color: var(--color-text-tertiary); text-align: center; padding: var(--space-xl);">No sessions yet for this book.</p>';
+    }
+
+    // Show last 5 sessions
+    const recentSessions = [...sessions].reverse().slice(0, 5);
+
+    return `
       <div style="display: grid; gap: var(--space-md);">
         ${recentSessions.map(sessionData => {
-            const session = Session.fromJSON(sessionData);
-            return `
-            <div class="card" style="padding: var(--space-md); font-size: var(--font-size-sm);">
+      const session = Session.fromJSON(sessionData);
+      return `
+            <div class="card card-clickable session-card" data-id="${session.id}" style="padding: var(--space-md); font-size: var(--font-size-sm);">
               <div style="display: flex; justify-content: space-between; margin-bottom: var(--space-xs);">
                 <span style="font-weight: var(--font-weight-bold);">${formatDate(session.startTime)}</span>
                 <span style="color: var(--color-accent-primary); font-weight: var(--font-weight-semibold);">+${session.pagesRead} pages</span>
@@ -133,48 +165,80 @@ class BookDetailView {
               </div>
             </div>
           `;
-        }).join('')}
+    }).join('')}
         ${sessions.length > 5 ? `
           <button class="btn btn-ghost btn-full" style="font-size: var(--font-size-sm);">View all sessions</button>
         ` : ''}
       </div>
     `;
+  }
+
+  setupEventListeners() {
+    const startBtn = document.getElementById('start-session-btn');
+    const resumeBtn = document.getElementById('resume-reading-btn');
+    const completeBtn = document.getElementById('mark-complete-btn');
+    const dropBtn = document.getElementById('drop-book-btn');
+    const shelveBtn = document.getElementById('shelve-book-btn');
+    const deleteBtn = document.getElementById('delete-book-btn');
+    const editBtn = document.getElementById('edit-progress-btn');
+
+    if (startBtn) {
+      startBtn.addEventListener('click', () => app.startSession(this.book.id));
     }
 
-    setupEventListeners() {
-        const startBtn = document.getElementById('start-session-btn');
-        const deleteBtn = document.getElementById('delete-book-btn');
-        const editBtn = document.getElementById('edit-progress-btn');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', () => {
+        storage.updateBook(this.book.id, { status: 'reading' });
+        showToast('Welcome back! Resuming your journey.', 'info');
+        this.render(this.container, this.book.id);
+      });
+    }
 
-        if (startBtn) {
-            startBtn.addEventListener('click', () => {
-                // Navigate to session tracker for this book
-                app.startSession(this.book.id);
-            });
+    if (completeBtn) {
+      completeBtn.addEventListener('click', () => app.navigateToConclusion(this.book.id, 'complete'));
+    }
+
+    if (dropBtn) {
+      dropBtn.addEventListener('click', () => app.navigateToConclusion(this.book.id, 'drop'));
+    }
+
+    if (shelveBtn) {
+      shelveBtn.addEventListener('click', () => {
+        storage.updateBook(this.book.id, { status: 'shelved' });
+        showToast('Book shelved for later.', 'info');
+        this.render(this.container, this.book.id);
+      });
+    }
+
+    deleteBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to remove this book and all its reading sessions?')) {
+        storage.deleteBook(this.book.id);
+        showToast('Book removed from library', 'info');
+        app.navigateTo('library');
+      }
+    });
+
+    editBtn.addEventListener('click', () => {
+      const newPage = prompt(`Current page is ${this.book.currentPage}. Enter new page number:`, this.book.currentPage);
+      if (newPage !== null) {
+        const pageNum = parseInt(newPage);
+        if (!isNaN(pageNum) && pageNum >= 0 && pageNum <= this.book.totalPages) {
+          storage.updateBook(this.book.id, { currentPage: pageNum });
+          showToast('Progress updated', 'success');
+          this.render(this.container, this.book.id);
+        } else {
+          showToast('Invalid page number', 'warning');
         }
+      }
+    });
 
-        deleteBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to remove this book and all its reading sessions?')) {
-                storage.deleteBook(this.book.id);
-                showToast('Book removed from library', 'info');
-                app.navigateTo('library');
-            }
-        });
-
-        editBtn.addEventListener('click', () => {
-            const newPage = prompt(`Current page is ${this.book.currentPage}. Enter new page number:`, this.book.currentPage);
-            if (newPage !== null) {
-                const pageNum = parseInt(newPage);
-                if (!isNaN(pageNum) && pageNum >= 0 && pageNum <= this.book.totalPages) {
-                    storage.updateBook(this.book.id, { currentPage: pageNum });
-                    showToast('Progress updated', 'success');
-                    this.render(this.container, this.book.id);
-                } else {
-                    showToast('Invalid page number', 'warning');
-                }
-            }
-        });
-    }
+    // Session history clicks
+    this.container.querySelectorAll('.session-card').forEach(card => {
+      card.addEventListener('click', () => {
+        app.navigateToSessionDetail(card.dataset.id);
+      });
+    });
+  }
 }
 
 // Global instance

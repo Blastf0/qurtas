@@ -1,21 +1,21 @@
 // Session History View Component for Qurtas
 
 class SessionHistoryView {
-    constructor() {
-        this.container = null;
-    }
+  constructor() {
+    this.container = null;
+  }
 
-    /**
-     * Render the full session history list
-     * @param {HTMLElement} container 
-     */
-    render(container) {
-        this.container = container;
-        const sessionsData = storage.getSessions();
-        const sessions = sessionsData.map(s => Session.fromJSON(s)).reverse();
+  /**
+   * Render the full session history list
+   * @param {HTMLElement} container 
+   */
+  render(container) {
+    this.container = container;
+    const sessionsData = storage.getSessions();
+    const sessions = sessionsData.map(s => Session.fromJSON(s)).reverse();
 
-        if (sessions.length === 0) {
-            this.container.innerHTML = `
+    if (sessions.length === 0) {
+      this.container.innerHTML = `
         <div class="fade-in">
           <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
             <button class="btn btn-ghost" onclick="app.navigateTo('profile')" style="padding: var(--space-sm); min-width: auto;">
@@ -28,10 +28,10 @@ class SessionHistoryView {
           </div>
         </div>
       `;
-            return;
-        }
+      return;
+    }
 
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
           <button class="btn btn-ghost" onclick="app.navigateTo('profile')" style="padding: var(--space-sm); min-width: auto;">
@@ -45,12 +45,19 @@ class SessionHistoryView {
         </div>
       </div>
     `;
-    }
 
-    renderSessionCard(session) {
-        const book = storage.getBookById(session.bookId);
-        return `
-      <div class="card" style="padding: var(--space-md);">
+    // Add event listeners
+    this.container.querySelectorAll('.session-card').forEach(card => {
+      card.addEventListener('click', () => {
+        app.navigateToSessionDetail(card.dataset.id);
+      });
+    });
+  }
+
+  renderSessionCard(session) {
+    const book = storage.getBookById(session.bookId);
+    return `
+      <div class="card card-clickable session-card" data-id="${session.id}" style="padding: var(--space-md);">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-sm);">
           <div>
             <h4 style="margin-bottom: 2px;">${book ? sanitizeHTML(book.title) : 'Unknown Book'}</h4>
@@ -73,7 +80,7 @@ class SessionHistoryView {
         ` : ''}
       </div>
     `;
-    }
+  }
 }
 
 // Global instance

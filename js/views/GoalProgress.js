@@ -1,27 +1,28 @@
 // Goal Progress View Component for Qurtas
 
 class GoalProgressView {
-    constructor() {
-        this.container = null;
-    }
+  constructor() {
+    this.container = null;
+  }
 
-    /**
-     * Render the goal progress dashboard
-     * @param {HTMLElement} container 
-     */
-    render(container) {
-        this.container = container;
-        const goalsData = storage.getGoals();
-        const sessionsData = storage.getSessions();
+  /**
+   * Render the goal progress dashboard
+   * @param {HTMLElement} container 
+   */
+  render(container) {
+    this.container = container;
+    const goalsData = storage.getGoals();
+    const sessionsData = storage.getSessions();
 
-        // Convert to models
-        const weeklyGoal = WeeklyGoal.fromJSON(goalsData);
-        const sessions = sessionsData.map(s => Session.fromJSON(s));
+    // Convert to models
+    const weeklyGoal = WeeklyGoal.fromJSON(goalsData);
+    const sessions = sessionsData.map(s => Session.fromJSON(s));
 
-        const progress = weeklyGoal.getProgress(sessions);
-        const stats = storage.getStats();
+    const progress = weeklyGoal.getProgress(sessions);
+    const suggestedPace = weeklyGoal.getSuggestedPace(progress);
+    const stats = storage.getStats();
 
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);">
           <h1>Goal Tracking</h1>
@@ -30,13 +31,46 @@ class GoalProgressView {
           </button>
         </div>
 
+        <!-- Weekly Theme -->
+        ${weeklyGoal.weeklyTheme ? `
+          <div class="card mb-xl" style="border-left: 4px solid var(--color-accent-primary); background: rgba(99, 102, 241, 0.05);">
+            <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary); margin-bottom: var(--space-xs); text-transform: uppercase; letter-spacing: 1px;">Weekly Theme</div>
+            <h2 style="font-size: var(--font-size-xl); margin-bottom: 0;">${sanitizeHTML(weeklyGoal.weeklyTheme)}</h2>
+          </div>
+        ` : ''}
+
+        <!-- Focus Books (Elective) -->
+        ${weeklyGoal.electiveBooks && weeklyGoal.electiveBooks.length > 0 ? `
+          <div class="card mb-xl">
+            <h3 style="margin-bottom: var(--space-md); font-size: var(--font-size-base);">Weekly Focus</h3>
+            <div style="display: grid; gap: var(--space-sm);">
+              ${weeklyGoal.electiveBooks.map(id => {
+      const bookData = storage.getBookById(id);
+      if (!bookData) return '';
+      const book = Book.fromJSON(bookData);
+      return `
+                  <div style="display: flex; align-items: center; gap: var(--space-md); background: var(--color-bg-tertiary); padding: var(--space-sm); border-radius: var(--radius-sm);">
+                    <div style="width: 30px; height: 45px; background: var(--color-bg-secondary); border-radius: 2px; overflow: hidden; flex-shrink: 0;">
+                      ${book.coverUrl ? `<img src="${book.coverUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : '📕'}
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="font-size: var(--font-size-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${sanitizeHTML(book.title)}</div>
+                      <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">${book.progress}% complete</div>
+                    </div>
+                  </div>
+                `;
+    }).join('')}
+            </div>
+          </div>
+        ` : ''}
+
         <!-- Weekly Summary -->
         <div class="card mb-xl text-center" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));">
-          <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-xs);">WEEK OF ${formatDate(weeklyGoal.weekStart).toUpperCase()}</p>
+          <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-xs);">OVERALL PROGRESS</p>
           <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); margin-bottom: var(--space-sm);">
             ${Math.floor((progress.pages.percentage + progress.sessions.percentage) / 2)}%
           </div>
-          <p style="font-size: var(--font-size-base);">Overall progress this week</p>
+          <p style="font-size: var(--font-size-base); color: var(--color-text-tertiary);">Mechanical Target Completion</p>
         </div>
 
         <!-- Pages Goal -->
@@ -81,18 +115,18 @@ class GoalProgressView {
           </p>
           <div style="display: flex; gap: var(--space-xl); margin-top: var(--space-md);">
             <div>
-              <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">${progress.pages.suggestedDaily}</div>
+              <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">${suggestedPace ? suggestedPace.pagesPerDay : 0}</div>
               <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">PAGES / DAY</div>
             </div>
             <div>
-              <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">${stats.weeklyPagesRead > 0 ? formatDuration(stats.totalReadingTime / stats.totalPagesRead * progress.pages.suggestedDaily) : '30m'}</div>
+              <div style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);">${stats.weeklyPagesRead > 0 && suggestedPace ? formatDuration(stats.totalReadingTime / stats.totalPagesRead * suggestedPace.pagesPerDay) : '30m'}</div>
               <div style="font-size: var(--font-size-xs); color: var(--color-text-tertiary);">EST. TIME / DAY</div>
             </div>
           </div>
         </div>
       </div>
     `;
-    }
+  }
 }
 
 // Global instance

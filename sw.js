@@ -1,7 +1,7 @@
 // Service Worker for Qurtas PWA
 // Provides offline functionality and caching
 
-const CACHE_NAME = 'qurtas-v1';
+const CACHE_NAME = 'qurtas-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',

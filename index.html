@@ -1,35 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Qurtas - Your reading companion. Track your reading journey, reflect on what you read, and read better.">
+  <meta name="description"
+    content="Qurtas - Your reading companion. Track your reading journey, reflect on what you read, and read better.">
   <meta name="theme-color" content="#0f0f0f">
-  
+
   <!-- iOS PWA Support -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Qurtas">
-  
+
   <title>Qurtas - Read Better</title>
-  
+
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-  
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-  
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/styles.css">
-  
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
   <!-- App Container -->
   <div id="app" class="app-container">
@@ -37,16 +40,12 @@
     <div id="view-container" class="view-container">
       <!-- Views will be injected here by the router -->
     </div>
-    
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottom-nav">
-      <button class="nav-item" data-view="library">
+      <button class="nav-item active" data-view="library">
         <span class="nav-icon">📚</span>
         <span class="nav-label">Library</span>
-      </button>
-      <button class="nav-item" data-view="session">
-        <span class="nav-icon">📖</span>
-        <span class="nav-label">Read</span>
       </button>
       <button class="nav-item" data-view="goals">
         <span class="nav-icon">🎯</span>
@@ -58,7 +57,7 @@
       </button>
     </nav>
   </div>
-  
+
   <!-- Scripts -->
   <script src="config.js"></script>
   <script src="js/utils.js"></script>
@@ -70,13 +69,15 @@
   <script src="js/views/BookSearch.js"></script>
   <script src="js/views/BookList.js"></script>
   <script src="js/views/BookDetail.js"></script>
+  <script src="js/views/BookConclusion.js"></script>
   <script src="js/views/SessionTracker.js"></script>
   <script src="js/views/SessionReview.js"></script>
+  <script src="js/views/SessionDetail.js"></script>
   <script src="js/views/SessionHistory.js"></script>
   <script src="js/views/GoalSettings.js"></script>
   <script src="js/views/GoalProgress.js"></script>
   <script src="js/app.js"></script>
-  
+
   <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
@@ -88,4 +89,5 @@
     }
   </script>
 </body>
+
 </html>

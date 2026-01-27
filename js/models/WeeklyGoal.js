@@ -4,11 +4,15 @@ class WeeklyGoal {
     constructor({
         weekStart = getStartOfWeek().toISOString(),
         pagesTarget = 0,
-        sessionsTarget = 0
+        sessionsTarget = 0,
+        electiveBooks = [],
+        weeklyTheme = ""
     }) {
         this.weekStart = weekStart;
         this.pagesTarget = pagesTarget;
         this.sessionsTarget = sessionsTarget;
+        this.electiveBooks = electiveBooks;
+        this.weeklyTheme = weeklyTheme;
     }
 
     // Check if this goal is for the current week
@@ -107,7 +111,9 @@ class WeeklyGoal {
         return {
             weekStart: this.weekStart,
             pagesTarget: this.pagesTarget,
-            sessionsTarget: this.sessionsTarget
+            sessionsTarget: this.sessionsTarget,
+            electiveBooks: this.electiveBooks,
+            weeklyTheme: this.weeklyTheme
         };
     }
 
