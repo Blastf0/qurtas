@@ -1,31 +1,31 @@
 // Session Detail View for Qurtas
 
 class SessionDetailView {
-    constructor() {
-        this.container = null;
-        this.session = null;
-        this.book = null;
+  constructor() {
+    this.container = null;
+    this.session = null;
+    this.book = null;
+  }
+
+  /**
+   * Render the details of a specific session
+   * @param {HTMLElement} container 
+   * @param {string} sessionId 
+   */
+  render(container, sessionId) {
+    this.container = container;
+    const session = sessionRepository.getById(sessionId);
+
+    if (!session) {
+      showToast('Session not found', 'error');
+      app.navigateTo('library');
+      return;
     }
 
-    /**
-     * Render the details of a specific session
-     * @param {HTMLElement} container 
-     * @param {string} sessionId 
-     */
-    render(container, sessionId) {
-        this.container = container;
-        const sessionData = storage.getSessionById(sessionId);
+    this.session = session;
+    this.book = bookRepository.getById(this.session.bookId);
 
-        if (!sessionData) {
-            showToast('Session not found', 'error');
-            app.navigateTo('library');
-            return;
-        }
-
-        this.session = Session.fromJSON(sessionData);
-        this.book = Book.fromJSON(storage.getBookById(this.session.bookId));
-
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl);">
           <button class="btn btn-ghost" onclick="window.history.back()" style="padding: var(--space-sm); min-width: auto;">
@@ -84,7 +84,7 @@ class SessionDetailView {
         </div>
       </div>
     `;
-    }
+  }
 }
 
 // Global instance

@@ -11,8 +11,7 @@ class SessionHistoryView {
    */
   render(container) {
     this.container = container;
-    const sessionsData = storage.getSessions();
-    const sessions = sessionsData.map(s => Session.fromJSON(s)).reverse();
+    const sessions = sessionRepository.getAll().reverse();
 
     if (sessions.length === 0) {
       this.container.innerHTML = `
@@ -55,7 +54,7 @@ class SessionHistoryView {
   }
 
   renderSessionCard(session) {
-    const book = storage.getBookById(session.bookId);
+    const book = bookRepository.getById(session.bookId);
     return `
       <div class="card card-clickable session-card" data-id="${session.id}" style="padding: var(--space-md);">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-sm);">

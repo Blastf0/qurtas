@@ -1,31 +1,31 @@
 // Session Review View Component (Structured Prompts) for Qurtas
 
 class SessionReviewView {
-    constructor() {
-        this.container = null;
-        this.session = null;
-        this.book = null;
+  constructor() {
+    this.container = null;
+    this.session = null;
+    this.book = null;
+  }
+
+  /**
+   * Render the post-session structured reflection
+   * @param {HTMLElement} container 
+   * @param {string} sessionId 
+   */
+  render(container, sessionId) {
+    this.container = container;
+    const session = sessionRepository.getById(sessionId);
+
+    if (!session) {
+      showToast('Session not found', 'error');
+      app.navigateTo('library');
+      return;
     }
 
-    /**
-     * Render the post-session structured reflection
-     * @param {HTMLElement} container 
-     * @param {string} sessionId 
-     */
-    render(container, sessionId) {
-        this.container = container;
-        const sessionData = storage.getSessionById(sessionId);
+    this.session = session;
+    this.book = bookRepository.getById(this.session.bookId);
 
-        if (!sessionData) {
-            showToast('Session not found', 'error');
-            app.navigateTo('library');
-            return;
-        }
-
-        this.session = Session.fromJSON(sessionData);
-        this.book = Book.fromJSON(storage.getBookById(this.session.bookId));
-
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="text-align: center; margin-bottom: var(--space-xl);">
           <h1 style="margin-bottom: var(--space-xs);">Great Reading!</h1>
@@ -67,31 +67,33 @@ class SessionReviewView {
       </div>
     `;
 
-        this.setupEventListeners();
-    }
+    this.setupEventListeners();
+  }
 
-    setupEventListeners() {
-        const saveBtn = document.getElementById('save-review-btn');
-        const skipBtn = document.getElementById('skip-review-btn');
+  setupEventListeners() {
+    const saveBtn = document.getElementById('save-review-btn');
+    const skipBtn = document.getElementById('skip-review-btn');
 
-        saveBtn.addEventListener('click', () => {
-            const notes = {
-                whatStoodOut: document.getElementById('prompt-stood-out').value.trim(),
-                keyIdeas: document.getElementById('prompt-key-ideas').value.trim(),
-                questionsRaised: document.getElementById('prompt-questions').value.trim()
-            };
+    saveBtn.addEventListener('click', () => {
+      const notes = {
+        whatStoodOut: document.getElementById('prompt-stood-out').value.trim(),
+        keyIdeas: document.getElementById('prompt-key-ideas').value.trim(),
+        questionsRaised: document.getElementById('prompt-questions').value.trim()
+      };
 
-            this.session.updateNotes(notes);
-            storage.updateSession(this.session.id, this.session.toJSON());
+      try {
+        readingService.saveSessionNotes(this.session.id, notes);
+        showToast('Reading reflection saved!', 'success');
+        app.navigateTo('library');
+      } catch (error) {
+        showToast(error.message, 'error');
+      }
+    });
 
-            showToast('Reading reflection saved!', 'success');
-            app.navigateTo('library');
-        });
-
-        skipBtn.addEventListener('click', () => {
-            app.navigateTo('library');
-        });
-    }
+    skipBtn.addEventListener('click', () => {
+      app.navigateTo('library');
+    });
+  }
 }
 
 // Global instance

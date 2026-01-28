@@ -67,12 +67,6 @@ class Storage {
         const sessions = this.getSessions();
         sessions.push(session);
         localStorage.setItem(this.SESSIONS_KEY, JSON.stringify(sessions));
-
-        // Update book's current page
-        if (session.endPage) {
-            this.updateBook(session.bookId, { currentPage: session.endPage });
-        }
-
         return session;
     }
 
@@ -82,12 +76,6 @@ class Storage {
         if (index !== -1) {
             sessions[index] = { ...sessions[index], ...updates };
             localStorage.setItem(this.SESSIONS_KEY, JSON.stringify(sessions));
-
-            // Update book's current page if endPage changed
-            if (updates.endPage) {
-                this.updateBook(sessions[index].bookId, { currentPage: updates.endPage });
-            }
-
             return sessions[index];
         }
         return null;
@@ -170,29 +158,7 @@ class Storage {
         if (data.settings) localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(data.settings));
     }
 
-    //==================== Statistics ====================
-
-    getStats() {
-        const books = this.getBooks();
-        const sessions = this.getSessions();
-        const weekSessions = sessions.filter(s => isInCurrentWeek(s.startTime));
-
-        const totalPagesRead = sessions.reduce((sum, s) => sum + (s.pagesRead || 0), 0);
-        const weeklyPagesRead = weekSessions.reduce((sum, s) => sum + (s.pagesRead || 0), 0);
-        const totalReadingTime = sessions.reduce((sum, s) => sum + (s.duration || 0), 0);
-
-        return {
-            totalBooks: books.length,
-            booksReading: books.filter(b => b.status === 'reading').length,
-            booksCompleted: books.filter(b => b.status === 'completed').length,
-            totalSessions: sessions.length,
-            weekSessions: weekSessions.length,
-            totalPagesRead,
-            weeklyPagesRead,
-            totalReadingTime, // in minutes
-            averageSessionLength: sessions.length > 0 ? Math.round(totalReadingTime / sessions.length) : 0
-        };
-    }
+    // Statistics moved to ReadingService
 }
 
 // Create global storage instance

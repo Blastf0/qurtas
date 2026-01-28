@@ -11,16 +11,15 @@ class GoalProgressView {
    */
   render(container) {
     this.container = container;
-    const goalsData = storage.getGoals();
-    const sessionsData = storage.getSessions();
+    const goals = goalRepository.getGoals();
+    const sessions = sessionRepository.getAll();
+    const stats = readingService.getGlobalStats();
 
-    // Convert to models
-    const weeklyGoal = WeeklyGoal.fromJSON(goalsData);
-    const sessions = sessionsData.map(s => Session.fromJSON(s));
+    // Convert goals to model for logic
+    const weeklyGoal = WeeklyGoal.fromJSON(goals);
 
     const progress = weeklyGoal.getProgress(sessions);
     const suggestedPace = weeklyGoal.getSuggestedPace(progress);
-    const stats = storage.getStats();
 
     this.container.innerHTML = `
       <div class="fade-in">
@@ -45,9 +44,8 @@ class GoalProgressView {
             <h3 style="margin-bottom: var(--space-md); font-size: var(--font-size-base);">Weekly Focus</h3>
             <div style="display: grid; gap: var(--space-sm);">
               ${weeklyGoal.electiveBooks.map(id => {
-      const bookData = storage.getBookById(id);
-      if (!bookData) return '';
-      const book = Book.fromJSON(bookData);
+      const book = bookRepository.getById(id);
+      if (!book) return '';
       return `
                   <div style="display: flex; align-items: center; gap: var(--space-md); background: var(--color-bg-tertiary); padding: var(--space-sm); border-radius: var(--radius-sm);">
                     <div style="width: 30px; height: 45px; background: var(--color-bg-secondary); border-radius: 2px; overflow: hidden; flex-shrink: 0;">

@@ -12,7 +12,7 @@ class GoalSettingsView {
    */
   render(container) {
     this.container = container;
-    this.currentGoal = storage.getGoals();
+    this.currentGoal = goalRepository.getGoals();
 
     // Ensure we have a goal for the current week
     const now = new Date();
@@ -28,7 +28,7 @@ class GoalSettingsView {
       };
     }
 
-    const allBooks = storage.getBooks();
+    const allBooks = bookRepository.getAll();
 
     this.container.innerHTML = `
       <div class="fade-in">
@@ -131,7 +131,7 @@ class GoalSettingsView {
         return;
       }
 
-      storage.setGoals({
+      goalRepository.setGoals({
         weekStart: this.currentGoal.weekStart,
         pagesTarget,
         sessionsTarget,

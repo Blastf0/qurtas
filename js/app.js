@@ -19,7 +19,7 @@ class QurtasApp {
     this.renderView('library');
 
     // Check if we have any books, show welcome if not
-    const books = storage.getBooks();
+    const books = bookRepository.getAll();
     if (books.length === 0) {
       this.showWelcomeScreen();
     }
@@ -98,6 +98,11 @@ class QurtasApp {
   renderView(viewName) {
     this.currentView = viewName;
 
+    // Add slide-up animation to container
+    this.viewContainer.classList.remove('slide-up');
+    void this.viewContainer.offsetWidth; // Force reflow
+    this.viewContainer.classList.add('slide-up');
+
     // For now, show placeholder content until we build the views
     switch (viewName) {
       case 'library':
@@ -164,7 +169,7 @@ class QurtasApp {
   }
 
   renderProfile() {
-    const stats = storage.getStats();
+    const stats = readingService.getGlobalStats();
 
     this.viewContainer.innerHTML = `
       <div class="fade-in">
@@ -225,7 +230,7 @@ class QurtasApp {
       totalPages: 352,
       currentPage: 127
     });
-    storage.addBook(book.toJSON());
+    bookRepository.save(book);
 
     // Add a sample session
     const session = new Session({
@@ -240,10 +245,10 @@ class QurtasApp {
         questionsRaised: 'How do I balance DRY with code clarity?'
       }
     });
-    storage.addSession(session.toJSON());
+    sessionRepository.save(session);
 
     // Set sample goals
-    storage.setGoals({
+    goalRepository.setGoals({
       weekStart: getStartOfWeek().toISOString(),
       pagesTarget: 200,
       sessionsTarget: 5

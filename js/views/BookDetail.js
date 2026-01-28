@@ -13,16 +13,16 @@ class BookDetailView {
    */
   render(container, bookId) {
     this.container = container;
-    const bookData = storage.getBookById(bookId);
+    const book = bookRepository.getById(bookId);
 
-    if (!bookData) {
+    if (!book) {
       showToast('Book not found', 'error');
       app.navigateTo('library');
       return;
     }
 
-    this.book = Book.fromJSON(bookData);
-    const stats = storage.getSessions(bookId);
+    this.book = book;
+    const stats = sessionRepository.getAll(bookId);
 
     this.container.innerHTML = `
       <div class="fade-in">
@@ -188,7 +188,7 @@ class BookDetailView {
 
     if (resumeBtn) {
       resumeBtn.addEventListener('click', () => {
-        storage.updateBook(this.book.id, { status: 'reading' });
+        bookRepository.update(this.book.id, { status: 'reading' });
         showToast('Welcome back! Resuming your journey.', 'info');
         this.render(this.container, this.book.id);
       });
@@ -204,7 +204,7 @@ class BookDetailView {
 
     if (shelveBtn) {
       shelveBtn.addEventListener('click', () => {
-        storage.updateBook(this.book.id, { status: 'shelved' });
+        bookRepository.update(this.book.id, { status: 'shelved' });
         showToast('Book shelved for later.', 'info');
         this.render(this.container, this.book.id);
       });
@@ -212,7 +212,7 @@ class BookDetailView {
 
     deleteBtn.addEventListener('click', () => {
       if (confirm('Are you sure you want to remove this book and all its reading sessions?')) {
-        storage.deleteBook(this.book.id);
+        bookRepository.delete(this.book.id);
         showToast('Book removed from library', 'info');
         app.navigateTo('library');
       }
@@ -223,7 +223,7 @@ class BookDetailView {
       if (newPage !== null) {
         const pageNum = parseInt(newPage);
         if (!isNaN(pageNum) && pageNum >= 0 && pageNum <= this.book.totalPages) {
-          storage.updateBook(this.book.id, { currentPage: pageNum });
+          bookRepository.update(this.book.id, { currentPage: pageNum });
           showToast('Progress updated', 'success');
           this.render(this.container, this.book.id);
         } else {

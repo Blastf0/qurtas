@@ -1,19 +1,19 @@
 // Book Search View Component for Qurtas
 
 class BookSearchView {
-    constructor() {
-        this.container = null;
-        this.onBookSelected = null;
-    }
+  constructor() {
+    this.container = null;
+    this.onBookSelected = null;
+  }
 
-    /**
-     * Render the search view into the given element
-     * @param {HTMLElement} container 
-     */
-    render(container) {
-        this.container = container;
+  /**
+   * Render the search view into the given element
+   * @param {HTMLElement} container 
+   */
+  render(container) {
+    this.container = container;
 
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <h1>Add a New Book</h1>
         <div class="form-group">
@@ -39,68 +39,68 @@ class BookSearchView {
       </div>
     `;
 
-        this.setupEventListeners();
+    this.setupEventListeners();
+  }
+
+  setupEventListeners() {
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const manualEntryBtn = document.getElementById('manual-entry-btn');
+
+    // Search on button click
+    searchBtn.addEventListener('click', () => this.handleSearch());
+
+    // Search on Enter key
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.handleSearch();
+    });
+
+    // Manual entry button
+    manualEntryBtn.addEventListener('click', () => this.renderManualEntryForm());
+  }
+
+  async handleSearch() {
+    const input = document.getElementById('search-input');
+    const query = input.value.trim();
+    const resultsContainer = document.getElementById('search-results');
+
+    if (query.length === 0) {
+      showToast('Please enter a search term', 'warning');
+      return;
     }
 
-    setupEventListeners() {
-        const searchInput = document.getElementById('search-input');
-        const searchBtn = document.getElementById('search-btn');
-        const manualEntryBtn = document.getElementById('manual-entry-btn');
-
-        // Search on button click
-        searchBtn.addEventListener('click', () => this.handleSearch());
-
-        // Search on Enter key
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.handleSearch();
-        });
-
-        // Manual entry button
-        manualEntryBtn.addEventListener('click', () => this.renderManualEntryForm());
-    }
-
-    async handleSearch() {
-        const input = document.getElementById('search-input');
-        const query = input.value.trim();
-        const resultsContainer = document.getElementById('search-results');
-
-        if (query.length === 0) {
-            showToast('Please enter a search term', 'warning');
-            return;
-        }
-
-        // Show loading state
-        resultsContainer.innerHTML = `
+    // Show loading state
+    resultsContainer.innerHTML = `
       <div class="loading-container">
         <div class="spinner"></div>
       </div>
     `;
 
-        try {
-            const results = await bookSearch.search(query);
-            this.displayResults(results);
-        } catch (error) {
-            resultsContainer.innerHTML = `
+    try {
+      const results = await bookSearch.search(query);
+      this.displayResults(results);
+    } catch (error) {
+      resultsContainer.innerHTML = `
         <div class="empty-state">
           <p class="empty-state-description">Something went wrong. Please try again.</p>
         </div>
       `;
-        }
     }
+  }
 
-    displayResults(results) {
-        const resultsContainer = document.getElementById('search-results');
+  displayResults(results) {
+    const resultsContainer = document.getElementById('search-results');
 
-        if (results.length === 0) {
-            resultsContainer.innerHTML = `
+    if (results.length === 0) {
+      resultsContainer.innerHTML = `
         <div class="empty-state">
           <p class="empty-state-description">No books found for that search query.</p>
         </div>
       `;
-            return;
-        }
+      return;
+    }
 
-        resultsContainer.innerHTML = `
+    resultsContainer.innerHTML = `
       <div style="display: flex; flex-direction: column; gap: var(--space-md);">
         ${results.map((book, index) => `
           <div class="card card-clickable result-item" data-index="${index}" style="display: flex; gap: var(--space-md); text-align: left;">
@@ -119,31 +119,31 @@ class BookSearchView {
       </div>
     `;
 
-        // Add click listeners to results
-        const resultItems = resultsContainer.querySelectorAll('.result-item');
-        resultItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const index = item.dataset.index;
-                const selectedBook = results[index];
-                this.confirmAddBook(selectedBook);
-            });
-        });
-    }
+    // Add click listeners to results
+    const resultItems = resultsContainer.querySelectorAll('.result-item');
+    resultItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const index = item.dataset.index;
+        const selectedBook = results[index];
+        this.confirmAddBook(selectedBook);
+      });
+    });
+  }
 
-    confirmAddBook(bookData) {
-        // Show a quick confirmation or just add it
-        const success = storage.addBook(new Book(bookData).toJSON());
-        if (success) {
-            showToast(`Added "${bookData.title}" to your library!`, 'success');
-            // Navigate to library after a slight delay
-            setTimeout(() => {
-                if (window.app) window.app.navigateTo('library');
-            }, 1000);
-        }
-    }
+  confirmAddBook(bookData) {
+    // Show a quick confirmation or just add it
+    const book = new Book(bookData);
+    bookRepository.save(book);
 
-    renderManualEntryForm() {
-        this.container.innerHTML = `
+    showToast(`Added "${bookData.title}" to your library!`, 'success');
+    // Navigate to library after a slight delay
+    setTimeout(() => {
+      if (window.app) window.app.navigateTo('library');
+    }, 1000);
+  }
+
+  renderManualEntryForm() {
+    this.container.innerHTML = `
       <div class="fade-in">
         <h1>Add Book Manually</h1>
         <div class="form-group">
@@ -166,33 +166,33 @@ class BookSearchView {
       </div>
     `;
 
-        document.getElementById('cancel-manual-btn').addEventListener('click', () => this.render(this.container));
-        document.getElementById('save-manual-btn').addEventListener('click', () => this.handleManualSave());
+    document.getElementById('cancel-manual-btn').addEventListener('click', () => this.render(this.container));
+    document.getElementById('save-manual-btn').addEventListener('click', () => this.handleManualSave());
+  }
+
+  handleManualSave() {
+    const title = document.getElementById('manual-title').value.trim();
+    const author = document.getElementById('manual-author').value.trim();
+    const pages = parseInt(document.getElementById('manual-pages').value);
+
+    if (!title || !author || isNaN(pages) || pages <= 0) {
+      showToast('Please fill in all fields correctly', 'warning');
+      return;
     }
 
-    handleManualSave() {
-        const title = document.getElementById('manual-title').value.trim();
-        const author = document.getElementById('manual-author').value.trim();
-        const pages = parseInt(document.getElementById('manual-pages').value);
+    const newBook = new Book({
+      title,
+      author,
+      totalPages: pages
+    });
 
-        if (!title || !author || isNaN(pages) || pages <= 0) {
-            showToast('Please fill in all fields correctly', 'warning');
-            return;
-        }
+    bookRepository.save(newBook);
+    showToast('Book added manually!', 'success');
 
-        const newBook = new Book({
-            title,
-            author,
-            totalPages: pages
-        });
-
-        storage.addBook(newBook.toJSON());
-        showToast('Book added manually!', 'success');
-
-        setTimeout(() => {
-            if (window.app) window.app.navigateTo('library');
-        }, 1000);
-    }
+    setTimeout(() => {
+      if (window.app) window.app.navigateTo('library');
+    }, 1000);
+  }
 }
 
 // Global instance

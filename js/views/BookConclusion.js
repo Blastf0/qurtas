@@ -1,31 +1,31 @@
 // Book Conclusion / Debrief View for Qurtas
 
 class BookConclusionView {
-    constructor() {
-        this.container = null;
-        this.book = null;
-        this.type = null; // 'complete' or 'drop'
+  constructor() {
+    this.container = null;
+    this.book = null;
+    this.type = null; // 'complete' or 'drop'
+  }
+
+  /**
+   * Render the conclusion/debrief form
+   * @param {HTMLElement} container 
+   * @param {string} bookId 
+   * @param {string} type 'complete' or 'drop'
+   */
+  render(container, bookId, type) {
+    this.container = container;
+    this.type = type;
+    const book = bookRepository.getById(bookId);
+
+    if (!book) {
+      app.navigateTo('library');
+      return;
     }
 
-    /**
-     * Render the conclusion/debrief form
-     * @param {HTMLElement} container 
-     * @param {string} bookId 
-     * @param {string} type 'complete' or 'drop'
-     */
-    render(container, bookId, type) {
-        this.container = container;
-        this.type = type;
-        const bookData = storage.getBookById(bookId);
+    this.book = book;
 
-        if (!bookData) {
-            app.navigateTo('library');
-            return;
-        }
-
-        this.book = Book.fromJSON(bookData);
-
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="text-align: center; margin-bottom: var(--space-xl);">
           <h1 style="margin-bottom: var(--space-xs);">${type === 'drop' ? 'Dropping Book' : 'Book Completed'}</h1>
@@ -50,12 +50,12 @@ class BookConclusionView {
       </div>
     `;
 
-        this.setupEventListeners();
-    }
+    this.setupEventListeners();
+  }
 
-    renderPrompts() {
-        if (this.type === 'drop') {
-            return `
+  renderPrompts() {
+    if (this.type === 'drop') {
+      return `
         <div class="form-group slide-up">
           <label class="form-label">1. Why are you dropping this book?</label>
           <select id="drop-reason" class="form-input">
@@ -80,8 +80,8 @@ class BookConclusionView {
           </div>
         </div>
       `;
-        } else {
-            return `
+    } else {
+      return `
         <div class="form-group slide-up">
           <label class="form-label">1. What is your overall takeaway?</label>
           <textarea id="final-takeaway" class="form-textarea" placeholder="The main thing you'll remember..." rows="3"></textarea>
@@ -93,39 +93,39 @@ class BookConclusionView {
           <textarea id="final-advice" class="form-textarea" placeholder="Advice for your future self..." rows="3"></textarea>
         </div>
       `;
-        }
     }
+  }
 
-    setupEventListeners() {
-        const saveBtn = document.getElementById('save-conclusion-btn');
-        const cancelBtn = document.getElementById('cancel-conclusion-btn');
+  setupEventListeners() {
+    const saveBtn = document.getElementById('save-conclusion-btn');
+    const cancelBtn = document.getElementById('cancel-conclusion-btn');
 
-        saveBtn.addEventListener('click', () => {
-            const notes = {};
-            if (this.type === 'drop') {
-                notes.reason = document.getElementById('drop-reason').value;
-                notes.gains = document.getElementById('gain-context').value.trim();
-                notes.returnLater = document.querySelector('input[name="return-later"]:checked').value === 'yes';
+    saveBtn.addEventListener('click', () => {
+      const notes = {};
+      if (this.type === 'drop') {
+        notes.reason = document.getElementById('drop-reason').value;
+        notes.gains = document.getElementById('gain-context').value.trim();
+        notes.returnLater = document.querySelector('input[name="return-later"]:checked').value === 'yes';
 
-                this.book.status = 'dropped';
-            } else {
-                notes.takeaway = document.getElementById('final-takeaway').value.trim();
-                notes.advice = document.getElementById('final-advice').value.trim();
+        this.book.status = 'dropped';
+      } else {
+        notes.takeaway = document.getElementById('final-takeaway').value.trim();
+        notes.advice = document.getElementById('final-advice').value.trim();
 
-                this.book.markCompleted();
-            }
+        this.book.markCompleted();
+      }
 
-            this.book.conclusionNotes = notes;
-            storage.updateBook(this.book.id, this.book.toJSON());
+      this.book.conclusionNotes = notes;
+      bookRepository.save(this.book);
 
-            showToast(this.type === 'drop' ? 'Book dropped with debrief 📝' : 'Book marked as completed! 🎉', 'success');
-            app.navigateTo('library');
-        });
+      showToast(this.type === 'drop' ? 'Book dropped with debrief 📝' : 'Book marked as completed! 🎉', 'success');
+      app.navigateTo('library');
+    });
 
-        cancelBtn.addEventListener('click', () => {
-            app.navigateToDetail(this.book.id);
-        });
-    }
+    cancelBtn.addEventListener('click', () => {
+      app.navigateToDetail(this.book.id);
+    });
+  }
 }
 
 // Global instance
