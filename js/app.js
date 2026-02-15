@@ -174,6 +174,9 @@ class QurtasApp {
 
   renderProfile() {
     const stats = storage.getStats();
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    const themeIcon = currentTheme === 'light' ? '☀️' : '🌙';
+    const themeLabel = currentTheme === 'light' ? 'Light Mode' : 'Dark Mode';
 
     this.viewContainer.innerHTML = `
       <div class="fade-in">
@@ -221,8 +224,63 @@ class QurtasApp {
             <span style="font-weight: var(--font-weight-semibold);">${stats.weeklyPagesRead}</span>
           </div>
         </div>
+
+        <!-- Theme Settings -->
+        <div class="card" style="margin-top: var(--space-lg);">
+          <h3 style="margin-bottom: var(--space-md);">Appearance</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: var(--font-weight-medium); margin-bottom: var(--space-xs);">Theme</div>
+              <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Choose your preferred color scheme</div>
+            </div>
+            <button id="theme-toggle" class="theme-toggle">
+              <span class="theme-icon" id="theme-icon">${themeIcon}</span>
+              <span id="theme-label">${themeLabel}</span>
+            </button>
+          </div>
+        </div>
       </div>
     `;
+
+    // Set up theme toggle event listener
+    const themeToggle = document.getElementById('theme-toggle');
+    console.log('[Theme] Setting up theme toggle button:', themeToggle);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        console.log('[Theme] Button clicked!');
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        console.log('[Theme] Current theme:', currentTheme);
+
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        console.log('[Theme] New theme will be:', newTheme);
+
+        console.log('[Theme] window.setTheme exists?', typeof window.setTheme);
+
+        if (typeof window.setTheme === 'function') {
+          window.setTheme(newTheme);
+          console.log('[Theme] setTheme called successfully');
+          console.log('[Theme] Theme attribute after setTheme:', document.documentElement.getAttribute('data-theme'));
+        } else {
+          console.error('[Theme] ERROR: window.setTheme is not a function!', typeof window.setTheme);
+        }
+
+        // Update button text and icon
+        const themeIcon = document.getElementById('theme-icon');
+        const themeLabel = document.getElementById('theme-label');
+        if (newTheme === 'light') {
+          if (themeIcon) themeIcon.textContent = '☀️';
+          if (themeLabel) themeLabel.textContent = 'Light Mode';
+        } else {
+          if (themeIcon) themeIcon.textContent = '🌙';
+          if (themeLabel) themeLabel.textContent = 'Dark Mode';
+        }
+        console.log('[Theme] Button UI updated');
+      });
+      console.log('[Theme] Event listener attached successfully');
+    } else {
+      console.error('[Theme] ERROR: theme-toggle button not found!');
+    }
   }
 
   // Helper method to add sample data for testing

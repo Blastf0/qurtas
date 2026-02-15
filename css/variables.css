@@ -1,7 +1,6 @@
 /* Design Tokens - CSS Variables */
 :root {
-    /* ==================== Colors ==================== */
-    /* Dark Mode - Primary Palette */
+    /* ==================== Colors (Dark Mode - Default) ==================== */
     --color-bg-primary: #0a0a0a;
     --color-bg-secondary: #161616;
     --color-bg-tertiary: #242424;
@@ -12,6 +11,8 @@
     --color-accent-secondary: #8b5cf6;
     --color-accent-tertiary: #a78bfa;
     --color-accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --color-accent-soft: rgba(99, 102, 241, 0.1);
+    --color-accent-soft-alt: rgba(168, 85, 247, 0.1);
 
     /* Text Colors */
     --color-text-primary: #f5f5f5;
@@ -128,4 +129,58 @@
     --safe-area-bottom: env(safe-area-inset-bottom);
     --safe-area-left: env(safe-area-inset-left);
     --safe-area-right: env(safe-area-inset-right);
+}
+
+/* ==================== Light Theme Overrides ==================== */
+[data-theme="light"] {
+    /* Light Mode - Warm Brown/Cream Palette */
+    --color-bg-primary: #faf8f5;
+    /* Eggshell */
+    --color-bg-secondary: #f5f1eb;
+    /* Light cream */
+    --color-bg-tertiary: #ebe5dc;
+    /* Warm cream */
+    --color-bg-elevated: #ffffff;
+    /* Pure white for elevation */
+
+    /* Accent Colors - Warm chestnut tones */
+    --color-accent-primary: #8b5a3c;
+    /* Chestnut brown */
+    --color-accent-secondary: #a0674a;
+    /* Lighter chestnut */
+    --color-accent-tertiary: #b8856d;
+    /* Soft chestnut */
+    --color-accent-gradient: linear-gradient(135deg, #8b5a3c 0%, #a0674a 100%);
+    --color-accent-soft: rgba(139, 90, 60, 0.08);
+    --color-accent-soft-alt: rgba(160, 103, 74, 0.08);
+
+    /* Text Colors */
+    --color-text-primary: #2d1f1a;
+    /* Dark brown */
+    --color-text-secondary: #6b5a4f;
+    /* Medium brown */
+    --color-text-tertiary: #9a8a7d;
+    /* Light brown */
+    --color-text-inverse: #faf8f5;
+    /* Eggshell for inverse */
+
+    /* Semantic Colors - Adjusted for light theme */
+    --color-success: #2d7a4f;
+    --color-warning: #c77d1a;
+    --color-error: #c53030;
+    --color-info: #2563eb;
+
+    /* Border & Divider Colors */
+    --color-border: #d9cfc2;
+    /* Soft brown border */
+    --color-border-light: #c9bfb2;
+    /* Slightly darker */
+    --color-divider: #e8e0d5;
+    /* Very light divider */
+
+    /* Shadows adjusted for light theme (softer shadows on light backgrounds) */
+    --shadow-sm: 0 1px 2px 0 rgba(45, 31, 26, 0.08);
+    --shadow-md: 0 4px 6px -1px rgba(45, 31, 26, 0.1), 0 2px 4px -1px rgba(45, 31, 26, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(45, 31, 26, 0.12), 0 4px 6px -2px rgba(45, 31, 26, 0.08);
+    --shadow-xl: 0 20px 25px -5px rgba(45, 31, 26, 0.15), 0 10px 10px -5px rgba(45, 31, 26, 0.1);
 }

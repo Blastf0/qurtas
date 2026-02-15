@@ -16,7 +16,11 @@ class BookSearch {
         if (!query || query.trim().length === 0) return [];
 
         try {
-            const url = `${this.baseUrl}?q=${encodeURIComponent(query)}&maxResults=${maxResults}&key=${this.apiKey}`;
+            let url = `${this.baseUrl}?q=${encodeURIComponent(query)}&maxResults=${maxResults}`;
+            if (this.apiKey) {
+                url += `&key=${this.apiKey}`;
+            }
+
             const response = await fetch(url);
 
             if (!response.ok) {

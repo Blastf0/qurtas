@@ -1,0 +1,127 @@
+/* Global Styles */
+body {
+    background-color: var(--color-bg-main);
+    color: var(--color-text-primary);
+    font-family: var(--font-family-base);
+    min-height: 100vh;
+    /* Safe area for mobile utility bars */
+    padding-bottom: calc(var(--nav-height) + var(--space-6));
+}
+
+.app-container {
+    max-width: 600px;
+    /* Mobile width constraint for desktop friendliness */
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Typography Helpers */
+h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: var(--space-4);
+    background: linear-gradient(to right, var(--color-text-primary), var(--color-text-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+}
+
+h3 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--space-4);
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3) var(--space-6);
+    border-radius: var(--radius-xl);
+    /* Pill shape */
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    transition: var(--transition-base);
+    width: 100%;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3);
+    /* Glow effect */
+}
+
+.btn-primary:hover {
+    background-color: #6366f1;
+    /* Indigo 500 */
+}
+
+.btn-secondary {
+    background-color: var(--color-bg-surface-2);
+    color: var(--color-text-primary);
+}
+
+.card {
+    background-color: var(--color-bg-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Inputs */
+.input-group {
+    margin-bottom: var(--space-4);
+}
+
+label {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--color-bg-surface-2);
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    transition: var(--transition-base);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    background-color: rgba(129, 140, 248, 0.1);
+}

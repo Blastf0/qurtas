@@ -1,27 +1,27 @@
 // Goal Progress View Component for Qurtas
 
 class GoalProgressView {
-    constructor() {
-        this.container = null;
-    }
+  constructor() {
+    this.container = null;
+  }
 
-    /**
-     * Render the goal progress dashboard
-     * @param {HTMLElement} container 
-     */
-    render(container) {
-        this.container = container;
-        const goalsData = storage.getGoals();
-        const sessionsData = storage.getSessions();
+  /**
+   * Render the goal progress dashboard
+   * @param {HTMLElement} container 
+   */
+  render(container) {
+    this.container = container;
+    const goalsData = storage.getGoals();
+    const sessionsData = storage.getSessions();
 
-        // Convert to models
-        const weeklyGoal = WeeklyGoal.fromJSON(goalsData);
-        const sessions = sessionsData.map(s => Session.fromJSON(s));
+    // Convert to models
+    const weeklyGoal = WeeklyGoal.fromJSON(goalsData);
+    const sessions = sessionsData.map(s => Session.fromJSON(s));
 
-        const progress = weeklyGoal.getProgress(sessions);
-        const stats = storage.getStats();
+    const progress = weeklyGoal.getProgress(sessions);
+    const stats = storage.getStats();
 
-        this.container.innerHTML = `
+    this.container.innerHTML = `
       <div class="fade-in">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);">
           <h1>Goal Tracking</h1>
@@ -31,7 +31,7 @@ class GoalProgressView {
         </div>
 
         <!-- Weekly Summary -->
-        <div class="card mb-xl text-center" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));">
+        <div class="card mb-xl text-center" style="background: linear-gradient(135deg, var(--color-accent-soft), var(--color-accent-soft-alt));">
           <p style="color: var(--color-text-secondary); font-size: var(--font-size-sm); margin-bottom: var(--space-xs);">WEEK OF ${formatDate(weeklyGoal.weekStart).toUpperCase()}</p>
           <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); margin-bottom: var(--space-sm);">
             ${Math.floor((progress.pages.percentage + progress.sessions.percentage) / 2)}%
@@ -92,7 +92,7 @@ class GoalProgressView {
         </div>
       </div>
     `;
-    }
+  }
 }
 
 // Global instance

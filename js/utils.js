@@ -214,3 +214,27 @@ function calculatePercentage(current, total) {
 function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
+/**
+ * Theme Management
+ */
+window.setTheme = function (theme) {
+    if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+    }
+
+    localStorage.setItem('qurtas_theme', theme);
+};
+
+window.getTheme = function () {
+    return localStorage.getItem('qurtas_theme') || 'dark';
+};
+
+// Initialize theme on page load
+(function () {
+    const savedTheme = window.getTheme();
+    window.setTheme(savedTheme);
+})();
+
