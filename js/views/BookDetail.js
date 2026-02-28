@@ -73,20 +73,31 @@ class BookDetailView {
 
         <!-- Action Buttons -->
         <div style="display: flex; flex-direction: column; gap: var(--space-md); margin-bottom: var(--space-2xl);">
-          ${this.book.status !== 'completed' ? `
+          ${this.book.status === 'backlog' ? `
+            <button id="start-reading-btn" class="btn btn-primary btn-full" style="height: 60px; font-size: var(--font-size-lg);">
+              📖 Start Reading This Book
+            </button>
+          ` : this.book.status === 'reading' ? `
             <button id="start-session-btn" class="btn btn-primary btn-full" style="height: 60px; font-size: var(--font-size-lg);">
               📖 Start Reading Session
             </button>
-          ` : `
+            <div style="display: flex; gap: var(--space-md);">
+              <button id="mark-completed-btn" class="btn btn-secondary" style="flex: 1;">✅ Mark as Completed</button>
+              <button id="mark-dropped-btn" class="btn btn-ghost" style="flex: 1; color: var(--color-error);">🚫 Drop Book</button>
+            </div>
+          ` : this.book.status === 'completed' ? `
             <button class="btn btn-secondary btn-full" disabled>
               ✅ Book Completed
             </button>
-          `}
-          
-          <div style="display: flex; gap: var(--space-md);">
-            <button id="edit-progress-btn" class="btn btn-secondary" style="flex: 1;">Update Progress</button>
-            <button id="delete-book-btn" class="btn btn-ghost" style="color: var(--color-error);">Remove Book</button>
-          </div>
+            <button id="move-to-reading-btn" class="btn btn-ghost btn-full">↩ Move Back to Reading</button>
+          ` : this.book.status === 'dropped' ? `
+            <button class="btn btn-secondary btn-full" style="background: var(--color-bg-tertiary); color: var(--color-text-secondary);" disabled>
+              🚫 Book Dropped
+            </button>
+            <button id="move-to-reading-btn" class="btn btn-ghost btn-full">↩ Move Back to Reading</button>
+          ` : ``}
+
+          <button id="edit-progress-btn" class="btn btn-secondary btn-full">Update Progress</button>
         </div>
 
         <!-- Session History -->
@@ -102,6 +113,7 @@ class BookDetailView {
 
     getStatusColor() {
         switch (this.book.status) {
+            case 'backlog': return 'var(--color-text-tertiary)';
             case 'reading': return 'var(--color-accent-primary)';
             case 'completed': return 'var(--color-success)';
             case 'dropped': return 'var(--color-error)';
@@ -142,24 +154,52 @@ class BookDetailView {
     }
 
     setupEventListeners() {
+        const startReadingBtn = document.getElementById('start-reading-btn');
         const startBtn = document.getElementById('start-session-btn');
-        const deleteBtn = document.getElementById('delete-book-btn');
         const editBtn = document.getElementById('edit-progress-btn');
+
+        if (startReadingBtn) {
+            startReadingBtn.addEventListener('click', () => {
+                storage.updateBook(this.book.id, { status: 'reading' });
+                showToast('Moved to Reading', 'success');
+                this.render(this.container, this.book.id);
+            });
+        }
 
         if (startBtn) {
             startBtn.addEventListener('click', () => {
-                // Navigate to session tracker for this book
                 app.startSession(this.book.id);
             });
         }
 
-        deleteBtn.addEventListener('click', () => {
-            if (confirm('Are you sure you want to remove this book and all its reading sessions?')) {
-                storage.deleteBook(this.book.id);
-                showToast('Book removed from library', 'info');
-                app.navigateTo('library');
-            }
-        });
+        const markCompletedBtn = document.getElementById('mark-completed-btn');
+        if (markCompletedBtn) {
+            markCompletedBtn.addEventListener('click', () => {
+                storage.updateBook(this.book.id, { status: 'completed', currentPage: this.book.totalPages });
+                showToast('Book marked as completed', 'success');
+                this.render(this.container, this.book.id);
+            });
+        }
+
+        const markDroppedBtn = document.getElementById('mark-dropped-btn');
+        if (markDroppedBtn) {
+            markDroppedBtn.addEventListener('click', () => {
+                if (confirm('Mark this book as dropped?')) {
+                    storage.updateBook(this.book.id, { status: 'dropped' });
+                    showToast('Book marked as dropped', 'info');
+                    this.render(this.container, this.book.id);
+                }
+            });
+        }
+
+        const moveToReadingBtn = document.getElementById('move-to-reading-btn');
+        if (moveToReadingBtn) {
+            moveToReadingBtn.addEventListener('click', () => {
+                storage.updateBook(this.book.id, { status: 'reading' });
+                showToast('Moved back to Reading', 'success');
+                this.render(this.container, this.book.id);
+            });
+        }
 
         editBtn.addEventListener('click', () => {
             const newPage = prompt(`Current page is ${this.book.currentPage}. Enter new page number:`, this.book.currentPage);

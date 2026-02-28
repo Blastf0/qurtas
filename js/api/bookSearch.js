@@ -30,12 +30,42 @@ class BookSearch {
             const data = await response.json();
 
             if (!data.items) {
-                // No items found - try OpenLibrary as fallback?
-                // For now just return empty
                 return [];
             }
 
-            return data.items.map(item => this.normalizeBook(item));
+            const books = data.items.map(item => this.normalizeBook(item));
+
+            // Smart Sort
+            return books.sort((a, b) => {
+                // Scoring function
+                const getScore = (book) => {
+                    let score = 0;
+
+                    // Popularity/Market Reach (ratingsCount)
+                    // This is our best proxy for sales volume
+                    const popularity = book.ratingsCount || 0;
+                    score += Math.log10(popularity + 1) * 3;
+
+
+                    // Date factor (recentness)
+                    if (book.publishedDate) {
+                        const year = parseInt(book.publishedDate.substring(0, 4));
+                        if (!isNaN(year)) {
+                            // Boost more recent books (last 20 years)
+                            const currentYear = new Date().getFullYear();
+                            const age = currentYear - year;
+                            if (age < 0) score += 5; // Future?
+                            else if (age < 5) score += 3;
+                            else if (age < 10) score += 2;
+                            else if (age < 20) score += 1;
+                        }
+                    }
+
+                    return score;
+                };
+
+                return getScore(b) - getScore(a);
+            });
         } catch (error) {
             console.error('Book search failed:', error);
             showToast('Book search failed. Please try again.', 'error');
@@ -73,6 +103,7 @@ class BookSearch {
             publisher: info.publisher || null,
             publishedDate: info.publishedDate || null,
             description: info.description || null,
+            ratingsCount: info.ratingsCount || null,
             // We don't use id from Google directly as our local ID
             apiId: item.id
         };

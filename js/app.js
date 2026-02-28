@@ -87,9 +87,6 @@ class QurtasApp {
       case 'library':
         this.renderLibrary();
         break;
-      case 'session':
-        this.renderSession();
-        break;
       case 'goals':
         this.renderGoals();
         break;
@@ -110,7 +107,7 @@ class QurtasApp {
           Your journey to reading better starts here.<br>
           Add your first book to begin tracking your reading sessions.
         </p>
-        <button class="btn btn-primary" onclick="app.navigateTo('session')">
+        <button class="btn btn-primary" onclick="bookSearchView.render(app.viewContainer)">
           Add Your First Book
         </button>
       </div>
@@ -121,36 +118,7 @@ class QurtasApp {
     bookListView.render(this.viewContainer);
   }
 
-  renderSession() {
-    // If no books, go straight to search
-    const books = storage.getBooks();
-    if (books.length === 0) {
-      bookSearchView.render(this.viewContainer);
-      return;
-    }
-
-    // If books exist, we'll eventually show a book picker here
-    // For now, let's just show the search view to allow adding more books
-    this.viewContainer.innerHTML = `
-      <div class="fade-in">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
-          <h1>Active Session</h1>
-          <button class="btn btn-secondary" id="open-search-btn">+ Add Book</button>
-        </div>
-        <div class="empty-state">
-          <div class="empty-state-icon">📖</div>
-          <h3 class="empty-state-title">Select a book to read</h3>
-          <p class="empty-state-description">Your library books will appear here for you to start a session.</p>
-        </div>
-      </div>
-    `;
-
-    document.getElementById('open-search-btn').addEventListener('click', () => {
-      bookSearchView.render(this.viewContainer);
-    });
-  }
-
-  navigateToGoalSettings() {
+navigateToGoalSettings() {
     this.currentView = 'goal-settings';
     // Clear active state of bottom nav
     const navItems = this.bottomNav.querySelectorAll('.nav-item');

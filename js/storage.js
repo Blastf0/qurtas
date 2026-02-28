@@ -17,6 +17,18 @@ class Storage {
 
     addBook(book) {
         const books = this.getBooks();
+
+        // Check for duplicates (same title and author, case-insensitive)
+        const isDuplicate = books.some(b =>
+            b.title.toLowerCase().trim() === book.title.toLowerCase().trim() &&
+            b.author.toLowerCase().trim() === book.author.toLowerCase().trim()
+        );
+
+        if (isDuplicate) {
+            console.warn(`Duplicate book detected: "${book.title}" by ${book.author}`);
+            return null;
+        }
+
         books.push(book);
         localStorage.setItem(this.BOOKS_KEY, JSON.stringify(books));
         return book;

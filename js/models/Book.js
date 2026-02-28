@@ -12,7 +12,7 @@ class Book {
         publishedDate = null,
         description = null,
         currentPage = 0,
-        status = 'reading', // reading, completed, dropped
+        status = 'backlog', // backlog, reading, completed, dropped
         dateAdded = new Date().toISOString(),
         dateCompleted = null
     }) {
@@ -70,7 +70,12 @@ class Book {
         this.status = 'dropped';
     }
 
-    // Resume reading (if dropped)
+    // Move to backlog
+    markBacklog() {
+        this.status = 'backlog';
+    }
+
+    // Resume reading (if dropped or backlog)
     markReading() {
         this.status = 'reading';
     }
